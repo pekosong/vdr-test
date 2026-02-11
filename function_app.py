@@ -1,32 +1,41 @@
-import logging
 import azure.functions as func
+import logging
+import json
 
+# FunctionApp 인스턴스 생성
 app = func.FunctionApp()
 
-@app.function_name(name="blob_created_handler")
+@app.function_name(name="BlobCreatedHandler")
 @app.event_grid_trigger(arg_name="event")
 def blob_created_handler(event: func.EventGridEvent):
-
+    logging.info(f"--- Event Grid Triggered ---")
+    logging.info(f"Event ID: {event.id}")
     logging.info(f"Event type: {event.event_type}")
 
-    # Validation 이벤트는 그냥 로그만 찍고 끝내라
+    # 1. Validation 이벤트 처리 (구독 인증용)
     if event.event_type == "Microsoft.EventGrid.SubscriptionValidationEvent":
-        logging.info("Validation event received")
+        logging.info("Validation event received and processed.")
         return
 
-    # BlobCreated만 처리
+    # 2. BlobCreated 이벤트만 필터링
     if event.event_type != "Microsoft.Storage.BlobCreated":
-        logging.info("Ignoring non-BlobCreated event")
+        logging.info(f"Ignoring non-BlobCreated event: {event.event_type}")
         return
 
-    data = event.get_json()
+    # 3. 데이터 추출
+    try:
+        data = event.get_json()
+        logging.info(f"Event data: {json.dumps(data, indent=2)}")
 
-    logging.info(f"Event data: {data}")
+        blob_url = data.get("url")
+        content_type = data.get("contentType")
+        content_length = data.get("contentLength")
 
-    blob_url = data.get("url")
-    content_type = data.get("contentType")
-    content_length = data.get("contentLength")
-
-    logging.info(f"Blob URL: {blob_url}")
-    logging.info(f"Content Type: {content_type}")
-    logging.info(f"Content Length: {content_length}")
+        # 결과 출력
+        logging.info(f"✅ Processing complete:")
+        logging.info(f"   - Blob URL: {blob_url}")
+        logging.info(f"   - Content Type: {content_type}")
+        logging.info(f"   - Content Length: {content_length} bytes")
+        
+    except Exception as e:
+        logging.error(f"Error parsing event data: {str(e)}")
