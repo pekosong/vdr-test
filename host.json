@@ -10,16 +10,6 @@
         "isEnabled": true,
         "excludedTypes": "Request"
       }
-    },
-    "logLevel": {
-      "default": "Information",
-      "Function": "Information",
-      "Host.Results": "Information"
-    }
-  },
-  "extensions": {
-    "eventGrid": {
-      "subscribeEndpoint": "http://localhost:7071/runtime/webhooks/eventgrid"
     }
   }
 }
