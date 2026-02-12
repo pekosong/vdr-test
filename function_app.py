@@ -2,8 +2,9 @@ import azure.functions as func
 import logging
 import json
 
-# FunctionApp 인스턴스 생성
+# FunctionApp 인스턴스 생성하는 부분
 app = func.FunctionApp()
+
 
 @app.function_name(name="BlobCreatedHandler")
 @app.event_grid_trigger(arg_name="event")
@@ -36,6 +37,6 @@ def blob_created_handler(event: func.EventGridEvent):
         logging.info(f"   - Blob URL: {blob_url}")
         logging.info(f"   - Content Type: {content_type}")
         logging.info(f"   - Content Length: {content_length} bytes")
-        
+
     except Exception as e:
         logging.error(f"Error parsing event data: {str(e)}")
