@@ -8,8 +8,11 @@ app = func.FunctionApp()
 
 # 환경 변수 로드 (Azure Portal의 App Settings에서 설정해야 함)
 CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-VM_QUEUE_NAME = os.getenv("AZURE_STORAGE_VM_QUEUE_NAME", "vdrqueue")
-FUNC_QUEUE_NAME = os.getenv("AZURE_STORAGE_FUNCTION_QUEUE_NAME", "vdrfuncqueue")
+if CONNECTION_STRING:
+    CONNECTION_STRING = CONNECTION_STRING.strip()
+
+VM_QUEUE_NAME = os.getenv("AZURE_STORAGE_VM_QUEUE_NAME", "vdrqueue").strip()
+FUNC_QUEUE_NAME = os.getenv("AZURE_STORAGE_FUNCTION_QUEUE_NAME", "vdrfuncqueue").strip()
 
 @app.function_name(name="BlobCreatedHandler")
 @app.event_grid_trigger(arg_name="event")

@@ -17,9 +17,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,12 +26,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies
-        run: |
-          pip install --target=".python_packages/lib/site-packages" -r requirements.txt
-
+      # 라이브러리를 여기서 설치하지 않고, 소스 코드만 압축해서 올립니다.
       - name: Zip artifact for deployment
-        # ./* 대신 . 을 사용하고, 불필요한 폴더를 명시적으로 제외하여 .python_packages가 포함되도록 합니다.
         run: |
           zip -r release.zip . -x ".git/*" ".github/*" "venv/*" "release.zip"
 
@@ -76,3 +69,6 @@ jobs:
           app-name: 'uploadevent'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          # 핵심: Azure 서버에서 직접 requirements.txt를 설치하도록 설정
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
