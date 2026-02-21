@@ -34,8 +34,9 @@ jobs:
           pip install --target=".python_packages/lib/site-packages" -r requirements.txt
 
       - name: Zip artifact for deployment
+        # ./* 대신 . 을 사용하고, 불필요한 폴더를 명시적으로 제외하여 .python_packages가 포함되도록 합니다.
         run: |
-          zip release.zip ./* -r
+          zip -r release.zip . -x ".git/*" ".github/*" "venv/*" "release.zip"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
